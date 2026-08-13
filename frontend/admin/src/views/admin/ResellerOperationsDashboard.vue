@@ -9,7 +9,6 @@ import type {
   AdminResellerOperationsOverview,
 } from '@/api/types'
 import { useAdminAuthStore } from '@/stores/auth'
-import ComplianceGuardWrapper from '@/components/ComplianceGuardWrapper.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -267,8 +266,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <ComplianceGuardWrapper v-if="canViewFinance">
-      <section class="space-y-3">
+    <section v-if="canViewFinance" class="space-y-3">
         <h2 class="text-base font-semibold">{{ t('admin.resellerOperations.sections.financePeriod') }}</h2>
         <div class="overflow-x-auto rounded-xl border border-border bg-card">
           <Table class="min-w-[860px]">
@@ -301,8 +299,6 @@ onMounted(() => {
             </TableBody>
           </Table>
         </div>
-      </section>
-
       <section class="space-y-3">
         <h2 class="text-base font-semibold">{{ t('admin.resellerOperations.sections.financeCurrent') }}</h2>
         <div class="overflow-x-auto rounded-xl border border-border bg-card">
@@ -343,7 +339,7 @@ onMounted(() => {
           </Table>
         </div>
       </section>
-    </ComplianceGuardWrapper>
+    </section>
 
     <div v-else class="rounded-lg border border-border bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground">
       {{ t('admin.resellerOperations.finance.noPermission') }}

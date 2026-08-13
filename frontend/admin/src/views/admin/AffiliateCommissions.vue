@@ -19,7 +19,6 @@ import ListPagination from '@/components/ListPagination.vue'
 import { useListRefresh, type ListFetchOptions } from '@/composables/useListRefresh'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatDate } from '@/utils/format'
-import ComplianceGuardWrapper from '@/components/ComplianceGuardWrapper.vue'
 import { adminUrl } from '@/utils/adminBase'
 
 const { t } = useI18n()
@@ -108,7 +107,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <ComplianceGuardWrapper>
   <div class="space-y-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-2xl font-semibold">{{ t('admin.affiliatesCommissions.title') }}</h1>
@@ -221,5 +219,4 @@ onMounted(() => {
       />
     </div>
   </div>
-  </ComplianceGuardWrapper>
 </template>
