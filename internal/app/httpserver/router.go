@@ -238,7 +238,7 @@ func SetupRouter(cfg *config.Config, c *container.Container) *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	// 嵌入式前端资源（仅在 -tags fullstack 构建时生效）
+	// 嵌入式管理端资源（在 -tags fullstack 或 -tags adminstack 构建时生效）。
 	if web.Enabled() {
 		// cmd/server 已在数据库初始化之前校验过一次；这里保留是为了兜住其它调用方
 		// （测试、未来的其它入口）——重复校验没有代价，漏校验会让 RegisterAdmin panic。
@@ -248,8 +248,10 @@ func SetupRouter(cfg *config.Config, c *container.Container) *gin.Engine {
 		if err := web.RegisterAdmin(r, cfg.Web.AdminPath, web.AdminFS()); err != nil {
 			log.Sugar().Fatalf("注册 admin SPA 失败: %v", err)
 		}
-		if err := web.RegisterUser(r, web.UserFS()); err != nil {
-			log.Sugar().Fatalf("注册 user SPA 失败: %v", err)
+		if web.UserEnabled() {
+			if err := web.RegisterUser(r, web.UserFS()); err != nil {
+				log.Sugar().Fatalf("注册 user SPA 失败: %v", err)
+			}
 		}
 	}
 

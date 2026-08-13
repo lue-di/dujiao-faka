@@ -283,8 +283,8 @@ func (p PasswordPolicyConfig) ValidationPolicy() passwordpolicy.Policy {
 	}
 }
 
-// WebConfig 仅在 fullstack 二进制模式下生效。
-// 默认构建模式（无 -tags fullstack）下这些字段不被任何代码读取。
+// WebConfig 仅在嵌入式 Web 构建模式（fullstack 或 adminstack）下生效。
+// 默认 API 构建下这些字段不被任何代码读取。
 type WebConfig struct {
 	// AdminPath 后台访问路径前缀，例如 "/admin" 或 "/dj-mgmt-7x9k2"。
 	// 校验规则见 internal/web.ValidateAdminPath。

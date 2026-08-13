@@ -183,7 +183,7 @@ reseller:
   # 退款扣减会与同一订单的未到账利润一起在确认时生效，确认期内退款不会误冻结账户。
   settlement_confirm_days: 7
 
-# Web 路由配置（仅在 fullstack 二进制模式下生效；普通 Docker 镜像部署忽略此段）
+# Web 路由配置（在 fullstack 或 API + admin Docker 镜像中生效；纯 API 二进制会忽略）
 web:
   # 后台访问路径前缀
   # 强烈建议改成不易猜测的字符串以降低自动化扫描风险

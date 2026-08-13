@@ -1,0 +1,3 @@
+# Server-specific configuration and image selection may contain credentials.
+.env
+config.yml

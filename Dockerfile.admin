@@ -1,0 +1,53 @@
+# syntax=docker/dockerfile:1
+#
+# API + admin image. The customer storefront is intentionally excluded: deploy it to
+# Vercel (or another static host) and point VITE_API_BASE_URL to this server.
+
+FROM --platform=$BUILDPLATFORM node:24.11.1-alpine AS admin-frontend
+
+WORKDIR /src
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable
+
+COPY frontend/admin/package.json frontend/admin/pnpm-lock.yaml ./admin/
+RUN cd admin && pnpm install --frozen-lockfile
+
+COPY frontend/admin ./admin
+# Injects the runtime admin-path placeholder used by internal/web.RegisterAdmin.
+RUN cd admin && pnpm run build:fullstack
+
+FROM --platform=$BUILDPLATFORM golang:1.26.5-alpine AS builder
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
+ARG APP_VERSION=v1.0.0
+
+WORKDIR /src
+ENV CGO_ENABLED=0
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+COPY --from=admin-frontend /src/admin/dist ./internal/web/dist/admin
+
+RUN set -eux; \
+    export GOOS="$TARGETOS" GOARCH="$TARGETARCH"; \
+    if [ "$TARGETARCH" = "arm" ] && [ -n "$TARGETVARIANT" ]; then export GOARM="${TARGETVARIANT#v}"; fi; \
+    if [ "$TARGETARCH" = "amd64" ] && [ -n "$TARGETVARIANT" ]; then export GOAMD64="${TARGETVARIANT#v}"; fi; \
+    go build -trimpath -tags release,adminstack \
+      -ldflags="-s -w -X github.com/dujiao-next/internal/version.Version=${APP_VERSION} -X github.com/dujiao-next/internal/version.BuildType=release" \
+      -o /out/dujiao-next ./cmd/server
+
+FROM alpine:3.22
+
+WORKDIR /app
+RUN apk --no-cache add ca-certificates tzdata \
+    && mkdir -p /app/db /app/uploads /app/logs
+
+COPY --from=builder /out/dujiao-next /app/dujiao-next
+COPY config.yml.example /app/config.yml.example
+
+EXPOSE 8080
+CMD ["./dujiao-next"]

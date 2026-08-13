@@ -227,6 +227,15 @@ Or with Docker:
 docker run -d -p 8080:8080 -v $PWD/config.yml:/app/config.yml:ro dujiaonext/dujiao-next:latest
 ```
 
+### Vercel storefront + self-hosted API/admin
+
+For a split deployment where the customer storefront runs on Vercel while the API and admin
+panel stay on your server, use the GHCR image and Compose files in
+[`deploy/`](deploy/README.md). Pushing `main` or a `v*` tag publishes a multi-architecture
+(`linux/amd64`, `linux/arm64`) image through
+[`publish-adminstack.yml`](.github/workflows/publish-adminstack.yml). This variant embeds only
+the admin SPA; it does not serve the customer storefront from `/`.
+
 ## Quick Start (Develop)
 
 Run the backend and the two frontends separately for hot reload:
